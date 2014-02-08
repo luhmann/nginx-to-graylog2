@@ -38,7 +38,7 @@ for line in file:
             matches = matches.groupdict()
             
             structTime = time.strptime(matches['timestamp'], '%d/%b/%Y:%H:%M:%S +0100')
-            matches['timestamp'] = datetime.datetime(*structTime[:6]).strftime(date_format)
+            matches['event_timestamp'] = datetime.datetime(*structTime[:6]).strftime(date_format)
             matches['@timestamp'] = int(datetime.datetime(*structTime[:6]).strftime('%s'))
             matches['http_response'] = int(matches['http_response'])
             params.update(matches)
