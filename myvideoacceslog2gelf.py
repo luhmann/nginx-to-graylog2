@@ -7,6 +7,7 @@ import argparse
 import datetime
 import time
 from urlparse import urlparse, parse_qs
+from user_agents import parse
 
 
 parser = argparse.ArgumentParser(description='Load an access load file, parse it assuming a certain format and push it to a configured graylog server')
@@ -41,8 +42,20 @@ for line in file:
             matches['event_timestamp'] = datetime.datetime(*structTime[:6]).strftime(date_format)
             matches['@timestamp'] = int(datetime.datetime(*structTime[:6]).strftime('%s'))
             matches['http_response'] = int(matches['http_response'])
-            params.update(matches)
 
+            user_agent = matches['user_agent']
+            user_agent = parse(user_agent)
+
+            params['browser'] = (user_agent.browser.family + ' ' + user_agent.browser.version_string).encode('utf-8')
+            params['device'] = user_agent.device.family.encode('utf-8')
+            params['os'] = (user_agent.os.family + user_agent.os.version_string).encode('utf-8')
+            params['is_mobile'] = user_agent.is_mobile
+            params['is_tablet'] = user_agent.is_tablet 
+            params['is_touch_capable'] = user_agent.is_touch_capable
+            params['is_pc'] = user_agent.is_pc 
+            params['is_bot'] = user_agent.is_bot 
+
+            params.update(matches)
             route = params['route']
 
             if js_error_indicator in route:
