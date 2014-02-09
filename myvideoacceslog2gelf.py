@@ -31,6 +31,7 @@ regexp = '^(?P<varnish>\S+) \S+ \S+ \[(?P<timestamp>\S+ \S+)\] "(?P<http_method>
 
 
 file = open(args.input, 'r')
+# this is getting out of hand ... we might need some functions here
 for line in file:
     try:
         params = {}
@@ -76,6 +77,9 @@ for line in file:
             else:
                 adapter = logging.LoggerAdapter(logging.getLogger('myvideo_access_events'), params)
                 adapter.debug(line)
+        else:
+            #if no matches print out line for debugging purposes
+            print line
         
     except Exception as ex:
        print ex
