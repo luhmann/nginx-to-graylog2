@@ -6,6 +6,7 @@ import logging
 import argparse
 import datetime
 import time
+import os.path
 from urlparse import urlparse, parse_qs
 from user_agents import parse
 
@@ -29,10 +30,11 @@ js_logger.addHandler(handler)
 
 regexp = '^(?P<varnish>\S+) \S+ \S+ \[(?P<timestamp>\S+ \S+)\] "(?P<http_method>\S*) (?P<route>\S*)[^"]*" (?P<http_response>\d+) \S* "(?P<referrer>[^"]*)" "(?P<user_agent>[^"]*)"'
 
+def parseFile(filename):
+  file = open(filename, 'r')
 
-file = open(args.input, 'r')
-# this is getting out of hand ... we might need some functions here
-for line in file:
+  loopIndex = 0
+  for line in file:
     try:
         params = {}
         matches = re.search(regexp, line)
@@ -80,8 +82,36 @@ for line in file:
         else:
             #if no matches print out line for debugging purposes
             print line
-        
+
+        if loopIndex%10000 == 0:
+          print filename + ': Parsed ' + str(loopIndex) + ' Events'
+
+        loopIndex += 1   
     except Exception as ex:
        print ex
        print line
+       loopIndex += 1
        continue
+
+fileLoopCounter = 0
+fileExists = True
+
+while fileExists:
+  extension = str(fileLoopCounter) if fileLoopCounter > 0 else ''
+  filename = args.input + extension
+
+  if os.path.isfile(filename):
+    print '------------------------------- PARSING NEW FILE ' + filename + '-------------------------------------------'
+    parseFile(filename)
+  else:
+    fileExists = False
+    break
+
+  fileLoopCounter += 1
+
+
+
+
+
+
+
