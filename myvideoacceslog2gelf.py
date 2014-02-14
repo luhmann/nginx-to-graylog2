@@ -13,6 +13,7 @@ from user_agents import parse
 
 """
 Get the arguments from the command line
+Invoke with python myvideoaccesslog2gelf.py --file <filename>
 
 :param file     The name and path of the input file, will look for matching files with standard log-rotation pattern in the same filepath 
 """
