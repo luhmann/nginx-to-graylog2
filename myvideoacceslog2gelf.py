@@ -97,7 +97,7 @@ fileLoopCounter = 0
 fileExists = True
 
 while fileExists:
-  extension = str(fileLoopCounter) if fileLoopCounter > 0 else ''
+  extension = '.' + str(fileLoopCounter) if fileLoopCounter > 0 else ''
   filename = args.input + extension
 
   if os.path.isfile(filename):
