@@ -15,7 +15,7 @@ from user_agents import parse
 Get the arguments from the command line
 Invoke with python myvideoaccesslog2gelf.py --file <filename>
 
-:param file     The name and path of the input file, will look for matching files with standard log-rotation pattern in the same filepath 
+:param file     The name and path of the input file, will look for matching files with standard log-rotation pattern in the same filepath
 """
 parser = argparse.ArgumentParser(description='Load an access load file, parse it assuming a certain format and push it to a configured graylog server')
 parser.add_argument('--file', dest='input', default=None, help='Please provide the location of the file that is supposed to be parsed')
@@ -41,7 +41,7 @@ js_logger.setLevel(logging.ERROR)
 js_logger.addHandler(handler)
 
 """
-The actual file-parser 
+The actual file-parser
 
 :param filename       The current filepath that we try to parse
 """
@@ -58,12 +58,12 @@ def parseFile(filename):
 
         if matches:
             matches = matches.groupdict()
-            
+
             # parse timestamp of log entry and try to set it as the actual timestamp
             structTime = time.strptime(matches['timestamp'], '%d/%b/%Y:%H:%M:%S +0100')
             matches['event_timestamp'] = datetime.datetime(*structTime[:6]).strftime(date_format)
             matches['@timestamp'] = int(datetime.datetime(*structTime[:6]).strftime('%s'))
-            
+
             # make sure this is an integer so we can run some statistics in elastic search on it
             matches['http_response'] = int(matches['http_response'])
 
@@ -74,13 +74,14 @@ def parseFile(filename):
             params['device'] = user_agent.device.family.encode('utf-8')
             params['os'] = (user_agent.os.family + user_agent.os.version_string).encode('utf-8')
             params['is_mobile'] = user_agent.is_mobile
-            params['is_tablet'] = user_agent.is_tablet 
+            params['is_tablet'] = user_agent.is_tablet
             params['is_touch_capable'] = user_agent.is_touch_capable
-            params['is_pc'] = user_agent.is_pc 
-            params['is_bot'] = user_agent.is_bot 
+            params['is_pc'] = user_agent.is_pc
+            params['is_bot'] = user_agent.is_bot
+            params['deviceAndOs'] = (params['device'] + ' ' + params['os']).encode('utf-8')
 
             params.update(matches)
-            
+
             # check if this is an js error report
             route = params['route']
             if js_error_indicator in route:
@@ -96,7 +97,7 @@ def parseFile(filename):
 
                 if 'timestamp' in parsed_errors:
                     params['js_error_timestamp'] = datetime.datetime.fromtimestamp(int(parsed_errors['timestamp'][0])/1000).strftime(date_format)
-                
+
                 # log the error
                 adapter = logging.LoggerAdapter(logging.getLogger('myvideo_js_messages'), params)
                 adapter.error(params['js_error_message'])
@@ -112,7 +113,7 @@ def parseFile(filename):
         if loopIndex%10000 == 0:
           print filename + ': Parsed ' + str(loopIndex) + ' Events'
 
-        loopIndex += 1   
+        loopIndex += 1
     except Exception as ex:
        print ex
        print line
