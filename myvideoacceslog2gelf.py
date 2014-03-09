@@ -85,6 +85,8 @@ def parseFile(filename):
             params['is_pc'] = user_agent.is_pc
             params['is_bot'] = user_agent.is_bot
 
+            params['deviceAndOs'] = (params['device'] + ' ' + params['os']).encode('utf-8')
+
             params.update(matches)
 
             # check if this is an js error report
