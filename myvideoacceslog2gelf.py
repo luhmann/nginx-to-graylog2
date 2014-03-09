@@ -62,7 +62,7 @@ def parseFile(filename):
             matches = matches.groupdict()
 
             #skip all healtcheck requests
-            if healthcheckString in matches['message']
+            if healthcheckString in matches['route']:
               continue
 
             # parse timestamp of log entry and try to set it as the actual timestamp
