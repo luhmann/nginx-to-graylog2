@@ -1,4 +1,4 @@
-nginx-to-graylog2-myvideo
+nginx-to-graylog2
 =========================
 
 An nginx logfile-parser that pushes messages to graylog2 by using [graypy](https://pypi.python.org/pypi/graypy). 
